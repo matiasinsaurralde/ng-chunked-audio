@@ -1,11 +1,15 @@
 angular.module( 'chunked-audio', [])
 .factory( 'ChunkPlayer', [ '$rootScope', function( $rootScope) {
-  return function( options ) {
+  return function( options, callback ) {
 
     var self = this;
 
     if( typeof( options ) == 'string' ) {
       options = { id: options };
+    };
+
+    if( options.duration ) {
+      this.duration = options.duration;
     };
 
     this.id = options.id;
@@ -38,6 +42,17 @@ angular.module( 'chunked-audio', [])
 
 
     this.player[0].src = window.URL.createObjectURL( this.mediaSource );
+    this.player.bind( 'timeupdate', function() {
+      if( self.stream.duration ) {
+        if( this.currentTime >= self.stream.duration ) { 
+          self.player.triggerHandler( { type: 'ended' } );
+        };
+      };
+    });
+
+    this.player.bind( 'ended', function() {
+      console.log( 'testing end event');
+    });
 
     this.source = $rootScope.audioContext.createMediaElementSource( this.player[0] );
     this.source.connect( $rootScope.audioContext.destination );
@@ -49,7 +64,9 @@ angular.module( 'chunked-audio', [])
         sourceBuffer: self.mediaSource.addSourceBuffer( 'audio/mpeg' ),
         loadedBuffers: [],
         appendedItems: 0,
+        duration: -1,
         append: function( chunk, callback ) {
+
           this.loadedBuffers.push( chunk );
           if( !this.sourceBuffer.updating ) {
             this.sourceBuffer.appendBuffer( this.loadedBuffers.shift() );
@@ -75,15 +92,17 @@ angular.module( 'chunked-audio', [])
         }
       };
 
-      self.play = self.stream.player.play;
+      // window.__player = $rootScope.players;
       $rootScope.players[ self.id ] = self.stream;
+      if( callback ) {
+        callback( self.stream, self.stream.player );
+      };
     });
   };
 }])
 .service( 'ChunkedAudio', [ '$rootScope', 'ChunkPlayer', function( $rootScope, ChunkPlayer ) {
   function load( options, callback ) {
-    var player = new ChunkPlayer( options );
-    callback( player );
+    var player = new ChunkPlayer( options, callback );
   };
   return {
     load: load
