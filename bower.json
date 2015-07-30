@@ -1,0 +1,19 @@
+{
+  "name": "ng-chunked-audio",
+  "version": "0.0.0",
+  "homepage": "https://github.com/matiasinsaurralde/ng-chunked-audio",
+  "authors": [
+    "Matias Insaurralde <matias@insaurral.de>"
+  ],
+  "keywords": [
+    "audio"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
