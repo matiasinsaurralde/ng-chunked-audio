@@ -35,7 +35,8 @@ angular.module( 'chunked-audio', [])
     this.stream = null;
 
     this.player = angular.element( '<audio></audio>' ),
-        body = angular.element(document).find('body').eq(0);
+    body = angular.element(document).find('body').eq(0);
+
     this.player.attr( 'data-id', this.id );
 
     body.append(this.player);
@@ -51,7 +52,6 @@ angular.module( 'chunked-audio', [])
     });
 
     this.player.bind( 'ended', function() {
-      console.log( 'testing end event');
     });
 
     this.source = $rootScope.audioContext.createMediaElementSource( this.player[0] );
@@ -92,7 +92,6 @@ angular.module( 'chunked-audio', [])
         }
       };
 
-      // window.__player = $rootScope.players;
       $rootScope.players[ self.id ] = self.stream;
       if( callback ) {
         callback( self.stream, self.stream.player );
@@ -100,6 +99,7 @@ angular.module( 'chunked-audio', [])
     });
   };
 }])
+
 .service( 'ChunkedAudio', [ '$rootScope', 'ChunkPlayer', function( $rootScope, ChunkPlayer ) {
   function load( options, callback ) {
     var player = new ChunkPlayer( options, callback );
@@ -108,6 +108,7 @@ angular.module( 'chunked-audio', [])
     load: load
   };
 }])
+
 .run( function( $rootScope ) {
   $rootScope.players = {};
   $rootScope.audioContext = new AudioContext();
